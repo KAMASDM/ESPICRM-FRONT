@@ -1,130 +1,86 @@
-import React, {useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   AppBar,
   Toolbar,
   Typography,
   Tabs,
   Tab,
-  Box,
-  Grid,
-  Card,
-  CardContent,
+  Button,
+  Box
 } from "@mui/material";
-import EnquiryForm from "./EnquiryForm";
-import BarChart from "./BarChart";
-import NotesWidget from "./NotesWidget";
+import EnquiryForm from "./components/Enquiry/EnquiryForm";
 import DetailEnquiry from "./DetailEnquiry";
-import StudentProfile from "./StudentProfile";
 import Assessment from "./Assessment";
 import Application from "./Application";
+import StudentProfile from "./StudentProfile";
+import Login from "./Login";
 
-//import Payments from "./Payments";
-import { Payments } from "@mui/icons-material";
-
-
-// Dashboard component is the main container for the application's interface.
 const Dashboard = () => {
-  // State for tracking the active tab index.
-  const [activeTab, setActiveTab] = useState(
-    parseInt(localStorage.getItem('activeTab'), 10) || 0
-  );
+  const [activeTab, setActiveTab] = useState(localStorage.getItem('authToken') ? 0 : 5);
+  const [authToken, setAuthToken] = useState(localStorage.getItem('authToken'));
 
-  // Function to handle changing tabs.
-  const handleChange = (event, newValue) => {
-    setActiveTab(newValue);
-    localStorage.setItem('activeTab', newValue); // Save new tab index to localStorage
+  useEffect(() => {
+    setActiveTab(authToken ? 0 : 5); // Automatically redirect to dashboard after login
+  }, [authToken]);
+
+  const handleLogin = (token) => {
+    setAuthToken(token);
+    localStorage.setItem('authToken', token);
   };
 
-  // Configuration for the tabs in the dashboard. Each tab is associated with a component.
+  const handleLogout = () => {
+    setAuthToken(null);
+    localStorage.removeItem('authToken');
+    setActiveTab(5); // Redirect to the Login tab
+  };
+
+  const handleChange = (event, newValue) => {
+    setActiveTab(newValue);
+    localStorage.setItem('activeTab', newValue);
+  };
+
   const tabsConfig = [
-    { label: "Dashboard", component: <DashboardContent /> },
+    // { label: "Dashboard", component: <EnquiryForm /> },
     { label: "Enquiry", component: <EnquiryForm /> },
     { label: "DetailEnquiry", component: <DetailEnquiry /> },
     { label: "Assessment", component: <Assessment /> },
     { label: "Application", component: <Application /> },
-    { label: "Payment", component: <Payments /> },
-    { label: "Students", component: <StudentProfile /> },
-   
-    
-    // More tabs can be added here as needed.
+    { label: "Student", component: <StudentProfile /> },
   ];
 
   return (
     <div style={{ flexGrow: 1 }}>
-      {/* AppBar for the top menu with the title and tab navigation */}
-      
-      
-        
       <AppBar position="fixed">
         <Toolbar>
           <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
             ESPI Dashboard
           </Typography>
-          <Tabs
-            value={activeTab.toFixed(0)}
-            onChange={handleChange}
-            aria-label="dashboard tabs"
-            sx={{
-              '.MuiTab-root': { color: '#fff' }, // Default color
-              '.Mui-selected': { color: 'red' }, // Active tab color
-            }}
-            TabIndicatorProps={{ style: { background: '#4caf50' } }}
-          >
-            {tabsConfig.map((tab, index) => (
-              <Tab label={tab.label} key={index} value={index}/>
-            ))}
-          </Tabs>
+          {authToken && (
+            <Tabs
+              value={activeTab}
+              onChange={handleChange}
+              aria-label="dashboard tabs"
+              sx={{
+                '.MuiTab-root': { color: '#fff' }, // Default color
+                '.Mui-selected': { color: '#000' } // Active tab color
+              }}
+            >
+              {tabsConfig.map((tab, index) => (
+                <Tab label={tab.label} key={index} value={index} />
+              ))}
+            </Tabs>
+          )}
+          {authToken && (
+            <Button color="inherit" onClick={handleLogout}>Logout</Button>
+          )}
         </Toolbar>
       </AppBar>
-     
-
-      {/* Placeholder Toolbar component to ensure content is not hidden under the AppBar */}
       <Toolbar />
-
-      {/* Main content area where the selected tab's component will be rendered */}
-      <main style={{ padding: 2, marginTop: "14px", color:"black" }}>
-        {tabsConfig[activeTab].component}
-      </main>
+      <Box component="main" sx={{ padding: 2, marginTop: "64px" }}>
+        {authToken ? tabsConfig[activeTab].component : <Login onLogin={handleLogin} />}
+      </Box>
     </div>
   );
 };
-
-// Helper component to render the content of the "Dashboard" tab.
-const DashboardContent = () => (
-  <Box sx={{ flexGrow: 1 }}>
-    <Grid container spacing={0.5}>
-      <Grid item xs={12} sm={5}>
-        <StyledCard>
-          <CardContent>
-            <BarChart />
-          </CardContent>
-        </StyledCard>
-      </Grid>
-      <Grid item xs={12} sm={4}>
-        <StyledCard>
-          <CardContent>
-            <NotesWidget />
-          </CardContent>
-        </StyledCard>
-      </Grid>
-    </Grid>
-  </Box>
-);
-
-// StyledCard component to avoid repeating styles for Cards.
-const StyledCard = ({ children }) => (
-  <Card
-    sx={{
-      borderColor: "primary.main",
-      borderWidth: "1px",
-      borderStyle: "solid",
-      backgroundColor: "#f9f9f9",
-      boxShadow: 3,
-      activeTab: 0,
-    }}
-  >
-    {children}
-  </Card>
-);
 
 export default Dashboard;

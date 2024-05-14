@@ -1,4 +1,4 @@
-import { TextField , Typography} from "@mui/material";
+import { TextField, Typography } from "@mui/material";
 
 export function getSteps() {
   return [
@@ -248,58 +248,89 @@ export function getStepContent(stepIndex, formData, handleChange) {
   }
 }
 
-const token = localStorage.getItem("authToken");
-
-
 export async function fetchEnquiries(setEnquiryData, setErrs) {
-    const url = "https://cloudconnectcampaign.com/espicrmnew/api/enquiries/";
-    const token = localStorage.getItem("authToken"); // Assuming 'authToken' is the key where the token is stored
-  
-    try {
-      const response = await fetch(url, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-      });
-  
-      if (response.status === 200) {
-        const data = await response.json();
-        const enquiriesWithNo = data.map((enquiry, index) => ({
-          ...enquiry,
-          no: index + 1,
-        }));
-        setEnquiryData(enquiriesWithNo);
-      } else if (response.status === 500) {
-        setErrs("Server Error: Could not retrieve data");
-      } else {
-        setErrs("Error While Fetching Data");
-      }
-    } catch (error) {
-      console.error("Fetching error:", error);
-      setErrs("Network error, please try again later.");
-    }
-  }
-  
+  const url = "https://cloudconnectcampaign.com/espicrmnew/api/enquiries/";
+  const token = localStorage.getItem("authToken");
 
-export function handleCellValueChanged(params) {
-  const updatedRowData = params.data;
-  updateDataOnServer(updatedRowData);
+  try {
+    const response = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (response.status === 200) {
+      const data = await response.json();
+      const enquiriesWithNo = data.map((enquiry, index) => ({
+        ...enquiry,
+        no: index + 1,
+      }));
+      setEnquiryData(enquiriesWithNo);
+    } else if (response.status === 500) {
+      setErrs("Server Error: Could not retrieve data");
+    } else {
+      setErrs("Error While Fetching Data");
+    }
+  } catch (error) {
+    console.error("Fetching error:", error);
+    setErrs("Network error, please try again later.");
+  }
 }
 
-async function updateDataOnServer(data) {
+export async function handleCellValueChanged(params, setErrs) {
+  const updatedRowData = params.data;
+  const url = `https://cloudconnectcampaign.com/espicrmnew/api/enquiries/${updatedRowData.id}/`;
+
   try {
-    const url = `https://cloudconnectcampaign.com/espicrmnew/api/enquiries/${data.id}/`;
     const response = await fetch(url, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("authToken")}`,
       },
-      body: JSON.stringify(data),
+      body: JSON.stringify(updatedRowData),
     });
-    const responseData = await response.json();
-    if (!response.ok) throw new Error(responseData);
+
+    if (!response.ok) {
+      if (response.status === 401) {
+        const newToken = await refreshToken();
+        if (newToken) {
+          localStorage.setItem("authToken", newToken);
+          return handleCellValueChanged(params, setErrs);
+        } else {
+          throw new Error("Session expired. Please log in again.");
+        }
+      }
+      throw new Error("Failed to update");
+    }
+
+    console.log("Update successful");
   } catch (error) {
     console.error("Failed to update data:", error);
+    setErrs("Failed to update data: " + error.message);
+  }
+}
+
+async function refreshToken() {
+  const refresh = localStorage.getItem("refreshToken");
+  try {
+    const response = await fetch("/api/auth/refresh", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ refresh }),
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      return data.access;
+    } else {
+      throw new Error("Failed to refresh token");
+    }
+  } catch (error) {
+    console.error("Error refreshing token:", error);
+    return null;
   }
 }

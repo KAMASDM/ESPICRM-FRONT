@@ -23,7 +23,6 @@ function EnquiryFormPreview({ formData }) {
             boxShadow: 3,
             width: "95%",
             marginLeft: 1,
-            
           }}
         >
           <CardContent>

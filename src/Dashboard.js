@@ -1,86 +1,73 @@
-import React, { useState, useEffect } from "react";
-import {
-  AppBar,
-  Toolbar,
-  Typography,
-  Tabs,
-  Tab,
-  Button,
-  Box
-} from "@mui/material";
-import EnquiryForm from "./components/Enquiry/EnquiryForm";
-import DetailEnquiry from "./DetailEnquiry";
-import Assessment from "./Assessment";
-import Application from "./Application";
-import StudentProfile from "./StudentProfile";
-import Login from "./Login";
+import React, { useState, useEffect } from 'react';
+import { AppBar, Toolbar, Typography, Tabs, Tab, Button, Box } from '@mui/material';
+import EnquiryForm from './components/Enquiry/EnquiryForm';
+import DetailEnquiry from './DetailEnquiry';
+import Assessment from './Assessment';
+import Application from './Application';
+import StudentProfile from './StudentProfile';
 
-const Dashboard = () => {
-  const [activeTab, setActiveTab] = useState(localStorage.getItem('authToken') ? 0 : 5);
-  const [authToken, setAuthToken] = useState(localStorage.getItem('authToken'));
+const Dashboard = ({ onLogout }) => {
+    const tabsConfig = [
+        { label: "Dashboard", component: <EnquiryForm /> },
+        { label: "Enquiry", component: <EnquiryForm /> },
+        { label: "DetailEnquiry", component: <DetailEnquiry /> },
+        { label: "Assessment", component: <Assessment /> },
+        { label: "Application", component: <Application /> },
+        { label: "Student Profile", component: <StudentProfile /> },
+    ];
 
-  useEffect(() => {
-    setActiveTab(authToken ? 0 : 5); // Automatically redirect to dashboard after login
-  }, [authToken]);
+    // Retrieve the active tab from local storage or default to 0
+    const initialTab = parseInt(localStorage.getItem('activeTab'), 10) || 0;
+    const [activeTab, setActiveTab] = useState(initialTab);
 
-  const handleLogin = (token) => {
-    setAuthToken(token);
-    localStorage.setItem('authToken', token);
-  };
+    useEffect(() => {
+        // Save the active tab index to local storage whenever it changes
+        localStorage.setItem('activeTab', activeTab);
+    }, [activeTab]);
 
-  const handleLogout = () => {
-    setAuthToken(null);
-    localStorage.removeItem('authToken');
-    setActiveTab(5); // Redirect to the Login tab
-  };
+    const handleChange = (event, newValue) => {
+        setActiveTab(newValue);
+    };
 
-  const handleChange = (event, newValue) => {
-    setActiveTab(newValue);
-    localStorage.setItem('activeTab', newValue);
-  };
+    // Ensure the activeTab value is within bounds of tabsConfig array
+    const validTab = activeTab >= 0 && activeTab < tabsConfig.length ? activeTab : 0;
 
-  const tabsConfig = [
-    // { label: "Dashboard", component: <EnquiryForm /> },
-    { label: "Enquiry", component: <EnquiryForm /> },
-    { label: "DetailEnquiry", component: <DetailEnquiry /> },
-    { label: "Assessment", component: <Assessment /> },
-    { label: "Application", component: <Application /> },
-    { label: "Student", component: <StudentProfile /> },
-  ];
-
-  return (
-    <div style={{ flexGrow: 1 }}>
-      <AppBar position="fixed">
-        <Toolbar>
-          <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
-            ESPI Dashboard
-          </Typography>
-          {authToken && (
-            <Tabs
-              value={activeTab}
-              onChange={handleChange}
-              aria-label="dashboard tabs"
-              sx={{
-                '.MuiTab-root': { color: '#fff' }, // Default color
-                '.Mui-selected': { color: '#000' } // Active tab color
-              }}
-            >
-              {tabsConfig.map((tab, index) => (
-                <Tab label={tab.label} key={index} value={index} />
-              ))}
-            </Tabs>
-          )}
-          {authToken && (
-            <Button color="inherit" onClick={handleLogout}>Logout</Button>
-          )}
-        </Toolbar>
-      </AppBar>
-      <Toolbar />
-      <Box component="main" sx={{ padding: 2, marginTop: "64px" }}>
-        {authToken ? tabsConfig[activeTab].component : <Login onLogin={handleLogin} />}
-      </Box>
-    </div>
-  );
+    return (
+        <div style={{ flexGrow: 1 }}>
+            <AppBar position="fixed">
+                <Toolbar>
+                    <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+                        ESPI Dashboard
+                    </Typography>
+                    <Tabs
+                        value={validTab}
+                        onChange={handleChange}
+                        aria-label="dashboard tabs"
+                        sx={{
+                            '& .MuiTab-root': {
+                                color: 'white', // Default tab color
+                            },
+                            '& .Mui-selected': {
+                                color: 'yellow', // Selected tab color
+                            },
+                            '& .MuiTabs-indicator': {
+                                backgroundColor: 'yellow', // Indicator color for selected tab
+                            },
+                        }}
+                    >
+                        {tabsConfig.map((tab, index) => (
+                            <Tab label={tab.label} key={index} />
+                        ))}
+                    </Tabs>
+                    <Button color="inherit" onClick={onLogout}>Logout</Button>
+                </Toolbar>
+            </AppBar>
+            <Toolbar /> {/* This is needed to offset the content below the AppBar */}
+            <Box component="main" sx={{ padding: 2, marginTop: "14px", width: '100vw' }}>
+                {tabsConfig[validTab].component}
+            </Box>
+        </div>
+    );
 };
 
 export default Dashboard;

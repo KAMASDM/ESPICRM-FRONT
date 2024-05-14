@@ -1,110 +1,119 @@
-import React, { useState } from "react";
-import { Container, Grid, Card, CardContent, Button, Stepper, Step, StepLabel, Typography, Box } from "@mui/material";
-import { getSteps, getStepContent, fetchEnquiries, handleCellValueChanged } from "./EnquiryFormUtils";
+import React, { useState, useEffect } from "react";
+import { Container, Stepper, Step, StepLabel, Button, Card, CardContent, Grid, Box } from "@mui/material";
 import EnquiryFormPreview from "./EnquiryFormPreview";
 import EnquiryFormTable from "./EnquiryFormTable";
+import { getSteps, getStepContent } from "./EnquiryFormUtils";
+import { fetchEnquiries } from "./authUtils"; // Import the utility function
+import { StyledCard, StyledHeader } from "./styles";
 
-function EnquiryForm() {
-  const [activeStep, setActiveStep] = useState(0);
-  const [formData, setFormData] = useState({
-    studentFirstName: "",
-    studentLastName: "",
-    studentPassport: "",
-    enquirysource: "",
-    studentPhone: "",
-    alternatePhone: "",
-    studentEmail: "",
-    studentCountry: "",
-    studentAddress: "",
-    studentState: "",
-    studentCity: "",
-    studentZip: "",
-    currentEducation: "",
-    currentInstitution: "",
-    currentCourse: "",
-    countryInterested: "",
-    universityInterested: "",
-    courseInterested: "",
-    level: "",
-    intakeInterested: "",
-    interestedServices: "",
-    assignedUser: "",
-    enquiryStatus: "",
-    Notes: "",
-  });
-  const [enquiryData, setEnquiryData] = useState([]);
-  const [errs, setErrs] = useState("");
+const EnquiryForm = () => {
+    const [activeStep, setActiveStep] = useState(0);
+    const [formData, setFormData] = useState({
+        studentFirstName: "",
+        studentLastName: "",
+        studentPassport: "",
+        enquirysource: "",
+        studentPhone: "",
+        alternatePhone: "",
+        studentEmail: "",
+        studentCountry: "",
+        studentAddress: "",
+        studentState: "",
+        studentCity: "",
+        studentZip: "",
+        currentEducation: "",
+        currentInstitution: "",
+        currentCourse: "",
+        countryInterested: "",
+        universityInterested: "",
+        courseInterested: "",
+        level: "",
+        intakeInterested: "",
+        interestedServices: "",
+        assignedUser: "",
+        enquiryStatus: "",
+        Notes: "",
+    });
 
-  const steps = getSteps();
+    const steps = getSteps();
 
-  const handleNext = () => setActiveStep((prevActiveStep) => prevActiveStep + 1);
-  const handleBack = () => setActiveStep((prevActiveStep) => prevActiveStep - 1);
-  const handleChange = (event) => setFormData({ ...formData, [event.target.name]: event.target.value });
+    const handleChange = (event) => {
+        const { name, value } = event.target;
+        setFormData((prevState) => ({
+            ...prevState,
+            [name]: value,
+        }));
+    };
 
-  useState(() => {
-    fetchEnquiries(setEnquiryData, setErrs);
-  }, []);
+    const handleNext = () => {
+        setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    };
 
-  return (
-    <Container maxWidth={false} disableGutters>
-      <Grid container spacing={2}>
-        <Grid item xs={12} md={6}>
-          <Card
-            sx={{
-              borderColor: "primary.main",
-              borderWidth: 1,
-              borderStyle: "solid",
-              backgroundColor: "#f9f9f9",
-              boxShadow: 3,
-              marginLeft: 3,
-            }}
-          >
-            <CardContent>
-              <Typography
-                variant="h6"
-                gutterBottom
-                sx={{
-                  backgroundColor: "primary.main",
-                  color: "common.white",
-                  padding: 1,
-                }}
-              >
-                Enquiry Form
-              </Typography>
-              <Stepper activeStep={activeStep} alternativeLabel>
-                {steps.map((label) => (
-                  <Step key={label}>
-                    <StepLabel>{label}</StepLabel>
-                  </Step>
-                ))}
-              </Stepper>
-              <form onSubmit={(event) => event.preventDefault()}>
-                {getStepContent(activeStep, formData, handleChange)}
-                <Button onClick={handleBack} disabled={activeStep === 0}>
-                  Back
-                </Button>
-                {activeStep === steps.length - 1 ? (
-                  <Button variant="contained" color="primary" type="submit">
-                    Submit
-                  </Button>
-                ) : (
-                  <Button variant="contained" color="primary" onClick={handleNext}>
-                    Next
-                  </Button>
-                )}
-              </form>
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <EnquiryFormPreview formData={formData} />
-        </Grid>
-        <Grid item xs={12}>
-          <EnquiryFormTable enquiryData={enquiryData} />
-        </Grid>
-      </Grid>
-    </Container>
-  );
-}
+    const handleBack = () => {
+        setActiveStep((prevActiveStep) => prevActiveStep - 1);
+    };
+
+    const handleSubmit = (event) => {
+        event.preventDefault();
+        // Handle form submission to the backend here
+    };
+
+    const [enquiryData, setEnquiryData] = useState([]);
+    const [errs, setErrs] = useState("");
+
+    useEffect(() => {
+        fetchEnquiries(setEnquiryData, setErrs);
+    }, []);
+
+    return (
+        <Container component="main" maxWidth="xl">
+            <Grid container spacing={2}>
+                <Grid item xs={12} md={3}>
+                    <StyledCard>
+                        <StyledHeader>Notes</StyledHeader>
+                        <CardContent>
+                            {/* <NotesWidget /> */}
+                        </CardContent>
+                    </StyledCard>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                    <StyledCard>
+                        <CardContent>
+                            <StyledHeader>Enquiry Form</StyledHeader>
+                            <Stepper activeStep={activeStep} alternativeLabel>
+                                {steps.map((label) => (
+                                    <Step key={label}>
+                                        <StepLabel>{label}</StepLabel>
+                                    </Step>
+                                ))}
+                            </Stepper>
+                            <form onSubmit={handleSubmit}>
+                                {getStepContent(activeStep, formData, handleChange)}
+                                <Button onClick={handleBack} disabled={activeStep === 0}>
+                                    Back
+                                </Button>
+                                {activeStep === steps.length - 1 ? (
+                                    <Button variant="contained" color="primary" type="submit">
+                                        Submit
+                                    </Button>
+                                ) : (
+                                    <Button variant="contained" color="primary" onClick={handleNext}>
+                                        Next
+                                    </Button>
+                                )}
+                            </form>
+                        </CardContent>
+                    </StyledCard>
+                </Grid>
+                <Grid item xs={12} md={3}>
+                    <EnquiryFormPreview formData={formData} />
+                </Grid>
+            </Grid>
+            <Grid item xs={12} md={8}>
+                <EnquiryFormTable enquiryData={enquiryData} setErrs={setErrs} />
+            </Grid>
+        </Container>
+    );
+};
 
 export default EnquiryForm;

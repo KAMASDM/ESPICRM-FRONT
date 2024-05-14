@@ -4,9 +4,9 @@ import { AgGridReact } from "ag-grid-react";
 import "ag-grid-enterprise";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
-import { handleCellValueChanged } from "./EnquiryFormUtils";
+import { handleCellValueChanged, fetchEnquiries } from "./EnquiryFormUtils";
 
-function EnquiryFormTable({ enquiryData }) {
+function EnquiryFormTable({ enquiryData, setErrs }) {
   const columns = [
     {
       headerName: "Student First Name",
@@ -87,6 +87,8 @@ function EnquiryFormTable({ enquiryData }) {
     },
   ];
 
+  const onCellValueChanged = params => handleCellValueChanged(params, setErrs);
+
   return (
     <Card
       sx={{
@@ -100,11 +102,7 @@ function EnquiryFormTable({ enquiryData }) {
       }}
     >
       <CardContent>
-        <Typography
-          variant="h6"
-          gutterBottom
-          sx={{ backgroundColor: "primary.main", color: "common.white", padding: 1 }}
-        >
+        <Typography variant="h6" gutterBottom sx={{ backgroundColor: "primary.main", color: "common.white", padding: 1 }}>
           Recent Enquiry Details
         </Typography>
         <Box sx={{ position: "relative", maxHeight: 500, overflow: "hidden", width: "100%" }}>
@@ -112,7 +110,7 @@ function EnquiryFormTable({ enquiryData }) {
             <AgGridReact
               rowData={enquiryData}
               columnDefs={columns}
-              onCellValueChanged={handleCellValueChanged}
+              onCellValueChanged={onCellValueChanged}
               sideBar={{ defaultToolPanel: "columns" }}
               ensureDomOrder={true}
               pagination={true}

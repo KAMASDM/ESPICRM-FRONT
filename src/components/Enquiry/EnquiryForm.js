@@ -1,3 +1,4 @@
+// src/components/Enquiry/EnquiryForm.js
 import React, { useState, useEffect } from "react";
 import { Container, Stepper, Step, StepLabel, Button, Card, CardContent, Grid, Box } from "@mui/material";
 import EnquiryFormPreview from "./EnquiryFormPreview";
@@ -68,15 +69,7 @@ const EnquiryForm = () => {
     return (
         <Container component="main" maxWidth="xl">
             <Grid container spacing={2}>
-                <Grid item xs={12} md={3}>
-                    <StyledCard>
-                        <StyledHeader>Notes</StyledHeader>
-                        <CardContent>
-                            {/* <NotesWidget /> */}
-                        </CardContent>
-                    </StyledCard>
-                </Grid>
-                <Grid item xs={12} md={6}>
+                <Grid item xs={12} md={9}>
                     <StyledCard>
                         <CardContent>
                             <StyledHeader>Enquiry Form</StyledHeader>

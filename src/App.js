@@ -1,3 +1,4 @@
+// src/App.js
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Dashboard from "./Dashboard";
@@ -16,6 +17,7 @@ function App() {
   }, [authToken]);
 
   const handleLogin = (token) => {
+    console.log("Setting auth token:", token);
     localStorage.setItem('authToken', token);
     setAuthToken(token);
   };
@@ -31,9 +33,9 @@ function App() {
       <CssBaseline />
       <Router>
         <Routes>
-          <Route path="/login" element={authToken ? <Navigate to="/Dashboard" /> : <Login onLogin={handleLogin} />} />
-          <Route path="/Dashboard" element={authToken ? <Dashboard onLogout={handleLogout} /> : <Navigate to="/login" />} />
-          <Route path="/" element={<Navigate to={authToken ? "/Dashboard" : "/login"} />} />
+          <Route path="/login" element={authToken ? <Navigate to="/Dashboard" replace /> : <Login onLogin={handleLogin} />} />
+          <Route path="/Dashboard" element={authToken ? <Dashboard onLogout={handleLogout} /> : <Navigate to="/login" replace />} />
+          <Route path="/" element={<Navigate to={authToken ? "/Dashboard" : "/login"} replace />} />
         </Routes>
       </Router>
     </ThemeProvider>

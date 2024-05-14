@@ -22,7 +22,8 @@ export async function refreshToken() {
             console.log("Token refreshed successfully:", data.access);
             return data.access;
         } else {
-            console.error('Failed to refresh token:', await response.json());
+            const errorData = await response.json();
+            console.error('Failed to refresh token:', errorData);
             throw new Error('Failed to refresh token');
         }
     } catch (error) {
@@ -61,10 +62,13 @@ export async function fetchEnquiries(setEnquiryData, setErrs) {
         if (response.ok) {
             const data = await response.json();
             setEnquiryData(data.map((enquiry, index) => ({ ...enquiry, no: index + 1 })));
+            console.log("Fetched enquiries successfully:", data);
         } else if (response.status === 500) {
             setErrs("Server Error: Could not retrieve data");
+            console.error("Server error:", await response.json());
         } else {
             setErrs("Error While Fetching Data");
+            console.error("Error fetching data:", await response.json());
         }
     } catch (error) {
         console.error("Fetching error:", error);

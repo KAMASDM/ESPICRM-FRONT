@@ -1,3 +1,4 @@
+// src/Login.js
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, TextField, Card, CardContent, Typography, Box } from '@mui/material';
@@ -22,12 +23,13 @@ const Login = ({ onLogin }) => {
         if (response.ok) {
             const data = await response.json();
             console.log("Login successful, received tokens:", data);
-            localStorage.setItem('authToken', data.token);
-            localStorage.setItem('refreshToken', data.refreshToken); // Assuming refresh token is also provided
-            onLogin(data.token);
+            localStorage.setItem('authToken', data.access); // Store access token
+            localStorage.setItem('refreshToken', data.refresh); // Store refresh token
+            onLogin(data.access); // Pass access token to handleLogin
             navigate("/Dashboard", { replace: true }); // Navigate to dashboard
         } else {
-            console.error("Login failed", await response.json());
+            const errorData = await response.json();
+            console.error("Login failed", errorData);
             alert('Login failed! Please check your username and password.');
         }
     };

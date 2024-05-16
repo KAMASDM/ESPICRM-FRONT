@@ -1,7 +1,18 @@
 import React from "react";
-import { Table, TableBody, TableCell, TableContainer, TableRow, Card, CardContent, Typography, Box, Paper } from "@mui/material";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableRow,
+  Card,
+  CardContent,
+  Typography,
+  Box,
+  Paper,
+} from "@mui/material";
 
-function EnquiryFormPreview({ formData }) {
+const EnquiryPreview = ({ formData }) => {
   return (
     <Box
       sx={{
@@ -30,17 +41,33 @@ function EnquiryFormPreview({ formData }) {
               variant="h6"
               gutterBottom
               component="div"
-              sx={{ backgroundColor: "primary.main", color: "common.white", padding: 1 }}
+              sx={{
+                backgroundColor: "primary.main",
+                color: "common.white",
+                padding: 1,
+              }}
             >
               Form Data Preview
             </Typography>
-            <TableContainer component={Box} sx={{ maxHeight: 460, overflow: "auto" }}>
+            <TableContainer
+              component={Box}
+              sx={{ maxHeight: 460, overflow: "auto" }}
+            >
               <Table size="small" aria-label="a dense table" stickyHeader>
                 <TableBody>
                   {Object.entries(formData).map(([key, value]) => (
                     <TableRow key={key}>
-                      <TableCell component="th" scope="row" sx={{ fontWeight: "bold", backgroundColor: "action.hover" }}>
-                        {key.replace(/([A-Z])/g, " $1").replace(/^./, (str) => str.toUpperCase())}
+                      <TableCell
+                        component="th"
+                        scope="row"
+                        sx={{
+                          fontWeight: "bold",
+                          backgroundColor: "action.hover",
+                        }}
+                      >
+                        {key
+                          .replace(/([A-Z])/g, " $1")
+                          .replace(/^./, (str) => str.toUpperCase())}
                       </TableCell>
                       <TableCell align="right">{value?.toString()}</TableCell>
                     </TableRow>
@@ -53,6 +80,6 @@ function EnquiryFormPreview({ formData }) {
       </Paper>
     </Box>
   );
-}
+};
 
-export default EnquiryFormPreview;
+export default EnquiryPreview;

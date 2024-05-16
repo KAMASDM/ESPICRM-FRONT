@@ -3,7 +3,7 @@ import { TextField, Button, Paper, IconButton, Typography, Checkbox, Grid, Box }
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 
-const NotesWidget = () => {
+const Notes = () => {
   const [noteText, setNoteText] = useState('');
   const [notes, setNotes] = useState([]);
   const [editIndex, setEditIndex] = useState(-1);
@@ -164,4 +164,4 @@ const NotesWidget = () => {
   );
 };
 
-export default NotesWidget;
+export default Notes;

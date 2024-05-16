@@ -18,35 +18,28 @@ import {
   styled,
   Card,
   CardContent,
-   
 } from "@mui/material";
-
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-enterprise";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
-import { FileUpload } from "@mui/icons-material";
 
-
-function getSteps() {
-  return [
-    "Basic Information",
-    "Examination Details",
-    "Family Details",
-    "Education Details",
-    "Other Documents",
-    "Offer Letter",
-    "Refusal Letter",
-    "Exam Documents",
-    "Confirmed Services",
-    "Status",
-  ];
-}
+const steps = [
+  "Basic Information",
+  "Examination Details",
+  "Family Details",
+  "Education Details",
+  "Other Documents",
+  "Offer Letter",
+  "Refusal Letter",
+  "Exam Documents",
+  "Confirmed Services",
+  "Status",
+];
 
 function DetailEnquiry() {
   const [activeStep, setActiveStep] = useState(0);
   const [formData, setFormData] = useState({
-    // Initialize all form fields with empty values or appropriate defaults
     Current_Enquiry: "",
     Current_Education_Details: "",
     Tenth_Education_Details: "",
@@ -81,8 +74,6 @@ function DetailEnquiry() {
     followup: "",
     Enquiry_Status: "",
   });
-
-  const steps = getSteps();
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -164,7 +155,6 @@ function DetailEnquiry() {
             />
           </Container>
         );
-
       case 1:
         return (
           <Container>
@@ -228,11 +218,8 @@ function DetailEnquiry() {
               value={formData.Gmat_Exam}
               onChange={handleChange}
             />
-
-            {/* Add more fields for the first step */}
           </Container>
         );
-
       case 2:
         return (
           <Container>
@@ -256,7 +243,6 @@ function DetailEnquiry() {
               value={formData.Father_Annual_Income}
               onChange={handleChange}
             />
-            {/* Add more fields for the second step */}
           </Container>
         );
 
@@ -359,7 +345,6 @@ function DetailEnquiry() {
               value={formData.Passport_Document}
               onChange={handleChange}
             />
-            {/* Add more fields for the third step */}
           </Container>
         );
 
@@ -391,7 +376,6 @@ function DetailEnquiry() {
               value={formData.Refusal}
               onChange={handleChange}
             />
-            {/* Add more fields for the fourth step */}
           </Container>
         );
 
@@ -470,7 +454,6 @@ function DetailEnquiry() {
               value={formData.Gmat_Result}
               onChange={handleChange}
             />
-            {/* Add more fields for the fifth step */}
           </Container>
         );
 
@@ -500,7 +483,6 @@ function DetailEnquiry() {
               value={formData.offer_letter}
               onChange={handleChange}
             />
-            {/* Add more fields for the sixth step */}
           </Container>
         );
 
@@ -517,7 +499,6 @@ function DetailEnquiry() {
               value={formData.followup}
               onChange={handleChange}
             />
-            {/* Add more fields for the seventh step */}
           </Container>
         );
 
@@ -534,10 +515,8 @@ function DetailEnquiry() {
               value={formData.Enquiry_Status}
               onChange={handleChange}
             />
-            {/* Add more fields for the eighth step */}
           </Container>
         );
-      // Add other cases for each step
       case 9:
         return (
           <Container>
@@ -551,7 +530,6 @@ function DetailEnquiry() {
               value={formData.Enquiry_Status}
               onChange={handleChange}
             />
-            {/* Add more fields for the final step */}
           </Container>
         );
       default:
@@ -561,8 +539,6 @@ function DetailEnquiry() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    console.log(formData);
-    // Typically handle the submission to the backend here
   };
 
   const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -570,28 +546,20 @@ function DetailEnquiry() {
     backgroundColor: theme.palette.primary.dark,
     color: theme.palette.common.white,
   }));
-  // Define a custom row Design in ag-grid
+
   const StyledTableRow = styled(TableRow)(({ theme }) => ({
     "&:nth-of-type(odd)": {
       backgroundColor: theme.palette.action.hover,
     },
-    // hide last border
     "&:last-child td, &:last-child th": {
       border: 0,
     },
   }));
 
-
-  
-
-
-  
-
   useEffect(() => {
     fetchEnquiries();
   }, []);
   const [EnquiryData, setEnquiryData] = useState([]);
-  const [errs, setErrs] = useState("");
   const fetchEnquiries = async () => {
     try {
       const response = await fetch(
@@ -604,28 +572,16 @@ function DetailEnquiry() {
           no: index + 1,
         }));
         setEnquiryData(enquiriesWithNo);
-      } else if (response.status === 500) {
-        setErrs("No Inquiry found");
-      } else {
-        setErrs("Error While Fetching Data");
       }
     } catch (error) {
       console.log("error", error);
     }
   };
 
-
-
-
-
-  
-  
   const columns = [
-
-    
     {
       headerName: "Current Enquiry",
-      
+
       field: "Current_Enquiry",
       valueGetter: (params) =>
         params.data.Current_Enquiry?.student_First_Name || "",
@@ -636,18 +592,13 @@ function DetailEnquiry() {
 
     {
       headerName: "Current Education Details",
-      // No need for 'field' if you're using a 'valueGetter'
-      valueGetter: (params) => params.data.Current_Education_Details?.level || "No education data",
-   
+      valueGetter: (params) =>
+        params.data.Current_Education_Details?.level || "No education data",
+
       sortable: true,
       filter: true,
       editable: true,
     },
-
-
-
-
-    
 
     {
       headerName: "Tenth Education Details",
@@ -655,16 +606,19 @@ function DetailEnquiry() {
       valueGetter: (params) => {
         const details = params.data.Tenth_Education_Details;
         if (!details) return "No education data";
-    
-        // Construct a detailed string
-        return `Level: ${details.level || '-'}, Stream: ${details.Stream || '-'}, Percentage: ${details.Percentage || '-'}%, Year of Passing: ${details.Year_of_Passing || '-'}, Institute: ${details.Name_of_Institute || '-'}, Medium: ${details.Medium_of_Education || '-'}, Board: ${details.Board || '-'}`;
+
+        return `Level: ${details.level || "-"}, Stream: ${
+          details.Stream || "-"
+        }, Percentage: ${details.Percentage || "-"}%, Year of Passing: ${
+          details.Year_of_Passing || "-"
+        }, Institute: ${details.Name_of_Institute || "-"}, Medium: ${
+          details.Medium_of_Education || "-"
+        }, Board: ${details.Board || "-"}`;
       },
       sortable: true,
       filter: true,
-      editable: false, // Assu
-    
-    
-},
+      editable: false,
+    },
 
     {
       headerName: "Twelveth Education Details",
@@ -741,7 +695,7 @@ function DetailEnquiry() {
     {
       headerName: "Father Occupation",
       field: "Father_Occupation",
-      
+
       sortable: true,
       filter: true,
       editable: true,
@@ -909,16 +863,13 @@ function DetailEnquiry() {
     },
   ];
 
-
-  
   const updateDataOnServer = async (data) => {
     try {
-      const url = `https://cloudconnectcampaign.com/espicrmnew/api/detailsEnquiry/${data.id}/`; // Use the correct URL and endpoint
+      const url = `https://cloudconnectcampaign.com/espicrmnew/api/detailsEnquiry/${data.id}/`;
       const response = await fetch(url, {
-        method: "PATCH", // or 'PATCH'
+        method: "PATCH",
         headers: {
           "Content-Type": "application/json",
-          // Include other headers as required, such as Authorization
         },
         body: JSON.stringify(data),
       });
@@ -933,46 +884,30 @@ function DetailEnquiry() {
     }
   };
 
-  
-
   const handleCellValueChanged = async (params) => {
-    // Extract the updated data from the params
     const updatedRowData = params.data;
-
-    // Call your existing API update function
     await updateDataOnServer(updatedRowData);
   };
 
-  const getRowStyle = (params) => {
-    if (params.node.rowIndex % 2 === 0) {
-      // Even row index, return a style object with a background color
-      return { background: "#f9f9f9" };
-    } else {
-      // Odd row index, return a different style or null for default
-      return { background: "#ffffff" };
-    }
-  };
-
   return (
-    <Container component="main"  sx={{ marginTop: 5 }}>
+    <Container component="main" sx={{ marginTop: 5 }}>
       <Grid container spacing={2}>
         <Grid item xs={12} md={8}>
           <Card
             sx={{
-              borderColor: "primary.main", // Set the border color
-              borderWidth: "1px", // Set the border width
-              borderStyle: "solid", // Required to show the border
-              backgroundColor: "#f9f9f9", // Light gray background for contrast
-              boxShadow: 3,              
+              borderColor: "primary.main",
+              borderWidth: "1px",
+              borderStyle: "solid",
+              backgroundColor: "#f9f9f9",
+              boxShadow: 3,
               fontSize: 4,
-              maxwidth:{
-                xs: 300, // max width on extra-small devices
-                sm: 500, // max width on small devices
-                md: 700, // max width on medium devices
-                lg: 800, // max width on large devices
-                xl: 1000, // max width on extra-large devices
-              }
-              // Optional: adds shadow for 3D effect
+              maxwidth: {
+                xs: 300,
+                sm: 500,
+                md: 700,
+                lg: 800,
+                xl: 1000,
+              },
             }}
           >
             <CardContent>
@@ -1026,32 +961,32 @@ function DetailEnquiry() {
         <Grid item xs={12} md={4}>
           <Box
             sx={{
-                borderColor: "primary.main", // Set the border color
-              borderWidth: "1px", // Set the border width
-              borderStyle: "solid", // Required to show the border
-              backgroundColor: "#f9f9f9", // Light gray background for contrast
-              boxShadow: 3,              
+              borderColor: "primary.main",
+              borderWidth: "1px",
+              borderStyle: "solid",
+              backgroundColor: "#f9f9f9",
+              boxShadow: 3,
               fontSize: 4,
-              height:'100%',
-              maxwidth:{
-                xs: 300, // max width on extra-small devices
-                sm: 500, // max width on small devices
-                md: 700, // max width on medium devices
-                lg: 800, // max width on large devices
-                xl: 5000, // max width on extra-large devices
-              }
-              }}
-            >
-              <Paper sx={{ position: "sticky", top: 10, zIndex: 1, bottom: 50, }}>
-                <Card
-                  sx={{
-                    borderColor: "primary.main", // Set the border color
-                    borderWidth: "1px", // Set the border width
-                    borderStyle: "solid", // Required to show the border
-                    backgroundColor: "#f9f9f9", // Light gray background for contrast
-                    boxShadow: 3, // Optional: adds shadow for 3D effect
-                    height:'100%',
-                  }}
+              height: "100%",
+              maxwidth: {
+                xs: 300,
+                sm: 500,
+                md: 700,
+                lg: 800,
+                xl: 5000,
+              },
+            }}
+          >
+            <Paper sx={{ position: "sticky", top: 10, zIndex: 1, bottom: 50 }}>
+              <Card
+                sx={{
+                  borderColor: "primary.main",
+                  borderWidth: "1px",
+                  borderStyle: "solid",
+                  backgroundColor: "#f9f9f9",
+                  boxShadow: 3,
+                  height: "100%",
+                }}
               >
                 <CardContent>
                   <Typography
@@ -1064,7 +999,7 @@ function DetailEnquiry() {
                       padding: 1,
                     }}
                   >
-                       Detail Enquiry Preview
+                    Detail Enquiry Preview
                   </Typography>
                   <TableContainer
                     component={Box}
@@ -1095,16 +1030,15 @@ function DetailEnquiry() {
       </Grid>
 
       <Grid item xs={12} md={24}>
-        {/* Other components or additional content here */}
         <Card
           sx={{
-            borderColor: "primary.main", // Set the border color
-            borderWidth: "1px", // Set the border width
-            borderStyle: "solid", // Required to show the border
-            backgroundColor: "#f9f9f9", // Light gray background for contrast
+            borderColor: "primary.main",
+            borderWidth: "1px",
+            borderStyle: "solid",
+            backgroundColor: "#f9f9f9",
             boxShadow: 5,
             padding: 1,
-            marginTop: 3, // Optional: adds shadow for 3D effect
+            marginTop: 3,
           }}
         >
           <CardContent>
@@ -1151,7 +1085,6 @@ function DetailEnquiry() {
                     sideBar={{
                       defaultToolPanel: "columns",
                     }}
-                  //  getRowStyle={getRowStyle}
                     ensureDomOrder={true}
                     pagination={true}
                     paginationPageSize={10}
@@ -1163,10 +1096,6 @@ function DetailEnquiry() {
                     filter="agTextColumnFilter"
                     rowSelection="multiple"
                     aggregateOnlyChangedColumns={true}
-                    
-                    
-                    
-
                   />
                 </CardContent>
               </div>

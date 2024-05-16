@@ -1,12 +1,61 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Card, CardContent, Typography, Box } from "@mui/material";
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-enterprise";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
-import { handleCellValueChanged, fetchEnquiries } from "./EnquiryFormUtils";
 
-function EnquiryFormTable({ enquiryData, setErrs }) {
+const EnquiryTable = () => {
+  const [enquiryData, setEnquiryData] = useState([]);
+  const fetchEnquiries = async () => {
+    const url = "https://cloudconnectcampaign.com/espicrmnew/api/enquiries/";
+    let token = localStorage.getItem("authToken");
+    try {
+      let response = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setEnquiryData(
+          data.map((enquiry, index) => ({ ...enquiry, no: index + 1 }))
+        );
+      } else {
+        console.error("Error fetching data:");
+      }
+    } catch (error) {
+      console.error("Fetching error:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchEnquiries();
+  }, []);
+  
+  const handleCellValueChanged = async (params) => {
+    try {
+      const response = await fetch(
+        `https://cloudconnectcampaign.com/espicrmnew/api/enquiries/${params.data.id}/`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+          },
+          body: JSON.stringify(params.data),
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Failed to update");
+      }
+      console.log("Update successful");
+    } catch (error) {
+      console.error("Failed to update data:", error);
+    }
+  };
+
   const columns = [
     {
       headerName: "Student First Name",
@@ -37,7 +86,9 @@ function EnquiryFormTable({ enquiryData, setErrs }) {
       headerName: "Interested Services",
       editable: true,
       valueGetter: (params) => {
-        const services = params.data.Interested_Services?.map((service) => service.Services).join(", ");
+        const services = params.data.Interested_Services?.map(
+          (service) => service.Services
+        ).join(", ");
         return services || "No services";
       },
     },
@@ -74,8 +125,14 @@ function EnquiryFormTable({ enquiryData, setErrs }) {
     {
       headerName: "Total Price INR",
       valueGetter: (params) => {
-        if (params.data.Interested_Services && params.data.Interested_Services.length > 0) {
-          return params.data.Interested_Services.reduce((sum, service) => sum + (service.Price || 0), 0);
+        if (
+          params.data.Interested_Services &&
+          params.data.Interested_Services.length > 0
+        ) {
+          return params.data.Interested_Services.reduce(
+            (sum, service) => sum + (service.Price || 0),
+            0
+          );
         }
         return "No services";
       },
@@ -86,8 +143,6 @@ function EnquiryFormTable({ enquiryData, setErrs }) {
       editable: true,
     },
   ];
-
-  const onCellValueChanged = params => handleCellValueChanged(params, setErrs);
 
   return (
     <Card
@@ -102,15 +157,33 @@ function EnquiryFormTable({ enquiryData, setErrs }) {
       }}
     >
       <CardContent>
-        <Typography variant="h6" gutterBottom sx={{ backgroundColor: "primary.main", color: "common.white", padding: 1 }}>
+        <Typography
+          variant="h6"
+          gutterBottom
+          sx={{
+            backgroundColor: "primary.main",
+            color: "common.white",
+            padding: 1,
+          }}
+        >
           Recent Enquiry Details
         </Typography>
-        <Box sx={{ position: "relative", maxHeight: 500, overflow: "hidden", width: "100%" }}>
-          <div className="ag-theme-alpine" style={{ height: "100%", width: "100%" }}>
+        <Box
+          sx={{
+            position: "relative",
+            maxHeight: 500,
+            overflow: "hidden",
+            width: "100%",
+          }}
+        >
+          <div
+            className="ag-theme-alpine"
+            style={{ height: "100%", width: "100%" }}
+          >
             <AgGridReact
               rowData={enquiryData}
               columnDefs={columns}
-              onCellValueChanged={onCellValueChanged}
+              onCellValueChanged={(params) => handleCellValueChanged(params)}
               sideBar={{ defaultToolPanel: "columns" }}
               ensureDomOrder={true}
               pagination={true}
@@ -128,6 +201,6 @@ function EnquiryFormTable({ enquiryData, setErrs }) {
       </CardContent>
     </Card>
   );
-}
+};
 
-export default EnquiryFormTable;
+export default EnquiryTable;

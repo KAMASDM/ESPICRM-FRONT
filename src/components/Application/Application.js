@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Container,
   Stepper,
@@ -13,7 +12,6 @@ import {
   TableCell,
   TableContainer,
   TableRow,
-  Paper,
   Grid,
   Box,
   Select,
@@ -22,30 +20,35 @@ import {
   Card,
   CardContent,
   FormControl,
-} from '@mui/material';
-import { styled } from '@mui/material/styles';
+} from "@mui/material";
+import { styled } from "@mui/material/styles";
 
-function ApplicationComponent() {
+function Application() {
   const [activeStep, setActiveStep] = useState(0);
   const [formData, setFormData] = useState({
-    application: '',
-    sop: '',
-    cv: '',
-    passport: '',
-    ielts: '',
-    gre: '',
-    toefl: '',
-    gmat: '',
-    pte: '',
-    work_experience: '',
-    diploma_marksheet: '',
-    bachelor_marksheet: '',
-    master_marksheet: '',
-    other_documents: '',
-    application_status: '',
+    application: "",
+    sop: "",
+    cv: "",
+    passport: "",
+    ielts: "",
+    gre: "",
+    toefl: "",
+    gmat: "",
+    pte: "",
+    work_experience: "",
+    diploma_marksheet: "",
+    bachelor_marksheet: "",
+    master_marksheet: "",
+    other_documents: "",
+    application_status: "",
   });
 
-  const steps = getSteps();
+  const steps = [
+    "Basic Details",
+    "Exam Documents",
+    "Education Documents",
+    "Status",
+  ];
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -66,12 +69,12 @@ function ApplicationComponent() {
   };
 
   const StyledTableCell = styled(TableCell)(({ theme }) => ({
-    fontWeight: 'bold',
+    fontWeight: "bold",
     backgroundColor: theme.palette.action.hover,
   }));
 
   const StyledTableRow = styled(TableRow)(({ theme }) => ({
-    '&:last-child td, &:last-child th': {
+    "&:last-child td, &:last-child th": {
       border: 0,
     },
   }));
@@ -238,7 +241,7 @@ function ApplicationComponent() {
           </Container>
         );
       default:
-        return 'Unknown step';
+        return "Unknown step";
     }
   };
 
@@ -248,10 +251,10 @@ function ApplicationComponent() {
         <Grid item xs={12} md={8}>
           <Card
             sx={{
-              borderColor: 'primary.main',
-              borderWidth: '1px',
-              borderStyle: 'solid',
-              backgroundColor: '#f9f9f9',
+              borderColor: "primary.main",
+              borderWidth: "1px",
+              borderStyle: "solid",
+              backgroundColor: "#f9f9f9",
               boxShadow: 3,
             }}
           >
@@ -260,8 +263,8 @@ function ApplicationComponent() {
                 variant="h6"
                 gutterBottom
                 sx={{
-                  backgroundColor: 'primary.main',
-                  color: 'common.white',
+                  backgroundColor: "primary.main",
+                  color: "common.white",
                   padding: 1,
                 }}
               >
@@ -281,11 +284,7 @@ function ApplicationComponent() {
                   Back
                 </Button>
                 {activeStep === steps.length - 1 ? (
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    type="submit"
-                  >
+                  <Button variant="contained" color="primary" type="submit">
                     Submit
                   </Button>
                 ) : (
@@ -304,12 +303,12 @@ function ApplicationComponent() {
         <Grid item xs={12} md={4}>
           <Card
             sx={{
-              borderColor: 'primary.main',
-              borderWidth: '1px',
-              borderStyle: 'solid',
-              backgroundColor: '#f9f9f9',
+              borderColor: "primary.main",
+              borderWidth: "1px",
+              borderStyle: "solid",
+              backgroundColor: "#f9f9f9",
               boxShadow: 3,
-              height: '100%',
+              height: "100%",
             }}
           >
             <CardContent>
@@ -318,21 +317,24 @@ function ApplicationComponent() {
                 gutterBottom
                 component="div"
                 sx={{
-                  backgroundColor: 'primary.main',
-                  color: 'common.white',
+                  backgroundColor: "primary.main",
+                  color: "common.white",
                   padding: 1,
                 }}
               >
                 Form Data Preview
               </Typography>
-              <TableContainer component={Box} sx={{ maxHeight: 460, overflow: 'auto' }}>
+              <TableContainer
+                component={Box}
+                sx={{ maxHeight: 460, overflow: "auto" }}
+              >
                 <Table size="small" aria-label="a dense table" stickyHeader>
                   <TableBody>
                     {Object.entries(formData).map(([key, value]) => (
                       <StyledTableRow key={key}>
                         <StyledTableCell component="th" scope="row">
                           {key
-                            .replace(/([A-Z])/g, ' $1')
+                            .replace(/([A-Z])/g, " $1")
                             .replace(/^./, (str) => str.toUpperCase())}
                         </StyledTableCell>
                         <StyledTableCell align="right">
@@ -351,10 +353,4 @@ function ApplicationComponent() {
   );
 }
 
-function getSteps() {
-  return ['Basic Details', 'Exam Documents', 'Education Documents', 'Status'];
-}
-
-export
-
- default ApplicationComponent;
+export default Application;

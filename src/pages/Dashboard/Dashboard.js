@@ -1,34 +1,42 @@
 // src/Dashboard.js
-import React, { useState, useEffect } from 'react';
-import { AppBar, Toolbar, Typography, Tabs, Tab, Button, Box } from '@mui/material';
-import EnquiryForm from './components/Enquiry/EnquiryForm';
-import DetailEnquiry from './DetailEnquiry';
-import Assessment from './Assessment';
-import Application from './Application';
-import StudentProfile from './StudentProfile';
+import React, { useState, useEffect } from "react";
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  Tabs,
+  Tab,
+  Button,
+  Box,
+} from "@mui/material";
+import EnquiryForm from "../../components/Enquiry/EnquiryForm";
+import DetailEnquiry from "../../components/DetailEnquiry/DetailEnquiry";
+import Assessment from "../../components/Assessment/Assessment";
+import Application from "../../components/Application/Application";
+import StudentProfile from "../../components/StudentProfile/StudentProfile";
 
 const Dashboard = ({ onLogout }) => {
   const tabsConfig = [
     { label: "Dashboard", component: <EnquiryForm /> },
-    { label: "Enquiry", component: <EnquiryForm /> },
     { label: "DetailEnquiry", component: <DetailEnquiry /> },
     { label: "Assessment", component: <Assessment /> },
     { label: "Application", component: <Application /> },
     { label: "Student Profile", component: <StudentProfile /> },
   ];
 
-  const initialTab = parseInt(localStorage.getItem('activeTab'), 10) || 0;
+  const initialTab = parseInt(localStorage.getItem("activeTab"), 10) || 0;
   const [activeTab, setActiveTab] = useState(initialTab);
 
   useEffect(() => {
-    localStorage.setItem('activeTab', activeTab);
+    localStorage.setItem("activeTab", activeTab);
   }, [activeTab]);
 
   const handleChange = (event, newValue) => {
     setActiveTab(newValue);
   };
 
-  const validTab = activeTab >= 0 && activeTab < tabsConfig.length ? activeTab : 0;
+  const validTab =
+    activeTab >= 0 && activeTab < tabsConfig.length ? activeTab : 0;
 
   return (
     <div style={{ flexGrow: 1 }}>
@@ -42,14 +50,14 @@ const Dashboard = ({ onLogout }) => {
             onChange={handleChange}
             aria-label="dashboard tabs"
             sx={{
-              '& .MuiTab-root': {
-                color: 'white',
+              "& .MuiTab-root": {
+                color: "white",
               },
-              '& .Mui-selected': {
-                color: 'yellow !important',
+              "& .Mui-selected": {
+                color: "yellow !important",
               },
-              '& .MuiTabs-indicator': {
-                backgroundColor: 'yellow',
+              "& .MuiTabs-indicator": {
+                backgroundColor: "yellow",
               },
             }}
           >
@@ -57,11 +65,16 @@ const Dashboard = ({ onLogout }) => {
               <Tab label={tab.label} key={index} />
             ))}
           </Tabs>
-          <Button color="inherit" onClick={onLogout}>Logout</Button>
+          <Button color="inherit" onClick={onLogout}>
+            Logout
+          </Button>
         </Toolbar>
       </AppBar>
       <Toolbar />
-      <Box component="main" sx={{ padding: 2, marginTop: "64px", width: '100vw' }}>
+      <Box
+        component="main"
+        sx={{ padding: 2, marginTop: "64px", width: "100vw" }}
+      >
         {tabsConfig[validTab].component}
       </Box>
     </div>
